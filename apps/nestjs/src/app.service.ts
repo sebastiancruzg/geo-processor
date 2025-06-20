@@ -25,14 +25,14 @@ export class GeoService {
     }
     try {
       const response = await lastValueFrom(
-        this.httpService.post(process.env.FAST_GEO_SERVICE || 'http://localhost:8000/geo', points),
+        this.httpService.post(process.env.FAST_GEO_SERVICE || 'http://localhost:8010/geo', points),
       );
       await this.cacheManager.set(cacheKey, response.data);
       return response.data;
     } catch (error) {
       if (error.code === 'ERR_INVALID_URL') {
         throw new HttpException(
-          `Invalid URL: ${process.env.FASTSERVICE || 'http://localhost:8000/geo'}`,
+          `Invalid URL: ${process.env.FASTSERVICE || 'http://localhost:8010/geo'}`,
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
