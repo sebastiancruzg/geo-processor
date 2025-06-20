@@ -3,27 +3,14 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useEffect, useRef } from "react";
 
 interface MapProps {
   points: { lat: number; lng: number }[];
 }
 
 const Map = ({ points }: MapProps) => {
-  const mapRef = useRef<L.Map>(null);
-
-  useEffect(() => {
-    if (mapRef.current && points.length > 0) {
-      const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng]));
-      mapRef.current.flyToBounds(bounds, { padding: [50, 50] });
-    }
-  }, [points]);
-
-  if (typeof window === "undefined") return null;
-
   return (
     <MapContainer
-      ref={mapRef}
       center={[40.7128, -74.006]}
       zoom={12}
       style={{ height: "100%", width: "100%" }}

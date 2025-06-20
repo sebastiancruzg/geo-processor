@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent } from "react";
 
 interface PointFormProps {
   points: { lat: number; lng: number }[];
@@ -9,28 +9,21 @@ interface PointFormProps {
 }
 
 const PointForm = ({ points, onAddPoint, onRemovePoint }: PointFormProps) => {
-  const [currentPoint, setCurrentPoint] = useState({
-    lat: "",
-    lng: "",
-  });
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const form = new FormData(e.currentTarget);
+
+    console.log(form);
+
     const newPoint = {
-      lat: parseFloat(currentPoint.lat),
-      lng: parseFloat(currentPoint.lng),
+      lat: parseFloat(form.get("lat") as string),
+      lng: parseFloat(form.get("lng") as string),
     };
 
     if (!isNaN(newPoint.lat) && !isNaN(newPoint.lng)) {
       onAddPoint(newPoint);
-      setCurrentPoint({ lat: "", lng: "" }); // Reset form
     }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setCurrentPoint((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -39,14 +32,12 @@ const PointForm = ({ points, onAddPoint, onRemovePoint }: PointFormProps) => {
         <div className="flex gap-4">
           <div className="flex-1">
             <label htmlFor="lat" className="block mb-1 font-semibold">
-              Latitude
+              Latitud
             </label>
             <input
               type="number"
               id="lat"
               name="lat"
-              value={currentPoint.lat}
-              onChange={handleInputChange}
               className="w-full p-2 border rounded"
               placeholder="e.g. 40.7128"
               min="-90"
@@ -58,14 +49,12 @@ const PointForm = ({ points, onAddPoint, onRemovePoint }: PointFormProps) => {
 
           <div className="flex-1">
             <label htmlFor="lng" className="block mb-1 font-semibold">
-              Longitude
+              Longitud
             </label>
             <input
               type="number"
               id="lng"
               name="lng"
-              value={currentPoint.lng}
-              onChange={handleInputChange}
               className="w-full p-2 border rounded"
               placeholder="e.g. -74.0060"
               min="-180"
@@ -80,12 +69,12 @@ const PointForm = ({ points, onAddPoint, onRemovePoint }: PointFormProps) => {
           type="submit"
           className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 font-semibold"
         >
-          Add Point
+          Añadir punto
         </button>
       </form>
 
       <div className="mt-4">
-        <h3 className="font-semibold mb-2">Saved Points:</h3>
+        <h3 className="font-semibold mb-2">Puntos:</h3>
         <ul className="space-y-2">
           {points.map((point, index) => (
             <li
@@ -93,7 +82,7 @@ const PointForm = ({ points, onAddPoint, onRemovePoint }: PointFormProps) => {
               className="flex justify-between items-center p-2 border-gray-50 border-2  rounded"
             >
               <span>
-                {point.lat.toFixed(6)}, {point.lng.toFixed(6)}
+                {point.lat.toFixed(4)}, {point.lng.toFixed(4)}
               </span>
               <button
                 onClick={() => onRemovePoint(index)}
