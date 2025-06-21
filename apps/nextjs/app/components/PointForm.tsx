@@ -38,7 +38,7 @@ export const PointForm = ({
         <div className="flex gap-4">
           <div className="flex-1">
             <label htmlFor="lat" className="block mb-1 font-semibold">
-              Latitud
+              Latitude
             </label>
             <input
               type="number"
@@ -55,7 +55,7 @@ export const PointForm = ({
 
           <div className="flex-1">
             <label htmlFor="lng" className="block mb-1 font-semibold">
-              Longitud
+              Longitude
             </label>
             <input
               type="number"
@@ -75,12 +75,12 @@ export const PointForm = ({
           type="submit"
           className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 font-semibold"
         >
-          Añadir punto
+          Add point
         </button>
       </form>
 
       <div className="mt-4">
-        <h3 className="font-semibold mb-2">Puntos:</h3>
+        <h3 className="font-semibold mb-2">Points:</h3>
         <ul className="space-y-2">
           {points.map((point, index) => (
             <li
@@ -94,7 +94,7 @@ export const PointForm = ({
                 onClick={() => onRemovePoint(index)}
                 className="text-red-500 hover:text-red-700"
               >
-                Eliminar
+                Remove
               </button>
             </li>
           ))}
