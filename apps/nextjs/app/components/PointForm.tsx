@@ -1,20 +1,25 @@
 "use client";
 
-import { FormEvent } from "react";
+import { FormEvent, useRef } from "react";
+import { Point } from "../interfaces";
 
 interface PointFormProps {
-  points: { lat: number; lng: number }[];
-  onAddPoint: (point: { lat: number; lng: number }) => void;
+  points: Point[];
+  onAddPoint: (point: Point) => void;
   onRemovePoint: (index: number) => void;
 }
 
-const PointForm = ({ points, onAddPoint, onRemovePoint }: PointFormProps) => {
+export const PointForm = ({
+  points,
+  onAddPoint,
+  onRemovePoint,
+}: PointFormProps) => {
+  const formRef = useRef<HTMLFormElement>(null);
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = new FormData(e.currentTarget);
-
-    console.log(form);
 
     const newPoint = {
       lat: parseFloat(form.get("lat") as string),
@@ -23,12 +28,13 @@ const PointForm = ({ points, onAddPoint, onRemovePoint }: PointFormProps) => {
 
     if (!isNaN(newPoint.lat) && !isNaN(newPoint.lng)) {
       onAddPoint(newPoint);
+      formRef.current?.reset();
     }
   };
 
   return (
     <div className="space-y-4 p-4 rounded-lg shadow">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
         <div className="flex gap-4">
           <div className="flex-1">
             <label htmlFor="lat" className="block mb-1 font-semibold">
@@ -88,7 +94,7 @@ const PointForm = ({ points, onAddPoint, onRemovePoint }: PointFormProps) => {
                 onClick={() => onRemovePoint(index)}
                 className="text-red-500 hover:text-red-700"
               >
-                Remove
+                Eliminar
               </button>
             </li>
           ))}
@@ -97,5 +103,3 @@ const PointForm = ({ points, onAddPoint, onRemovePoint }: PointFormProps) => {
     </div>
   );
 };
-
-export default PointForm;

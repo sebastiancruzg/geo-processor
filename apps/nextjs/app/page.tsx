@@ -1,35 +1,23 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import PointForm from "./components/PointForm";
 import { useEffect, useState } from "react";
-
-interface Point {
-  lat: number;
-  lng: number;
-}
-
-interface Bound {
-  north: number;
-  south: number;
-  east: number;
-  west: number;
-}
-
-interface GeoInfo {
-  centroid: Point;
-  bounds: Bound;
-}
+import { GeoInfo, Point } from "./interfaces";
+import { PointForm } from "./components/PointForm";
 
 const Map = dynamic(() => import("@/app/components/Map"), {
   loading: () => <p>A map is loading</p>,
   ssr: false,
 });
 
+const initialGeoInfo: GeoInfo = {
+  centroid: { lat: 0, lng: 0 },
+  bounds: { north: 0, south: 0, east: 0, west: 0 },
+};
+
 export default function Page() {
   const [points, setPoints] = useState<Point[]>([]);
-
-  const [geoInfo, setGeoInfo] = useState<GeoInfo>();
+  const [geoInfo, setGeoInfo] = useState<GeoInfo>(initialGeoInfo);
 
   const handleAddPoint = (newPoint: Point) => {
     setPoints((prev) => [...prev, newPoint]);
@@ -40,27 +28,40 @@ export default function Page() {
   };
 
   useEffect(() => {
-    const response = processPoints(points);
-    setGeoInfo(response);
-    console.log("Processed points:", response);
+    if (points.length === 0) {
+      setGeoInfo(initialGeoInfo);
+      return;
+    }
+
+    const fetchGeoInfo = async () => {
+      try {
+        const response = await processPoints(points);
+        setGeoInfo(response);
+      } catch (error) {
+        console.error("Error fetching geo info:", error);
+      }
+    };
+
+    fetchGeoInfo();
   }, [points]);
 
-  const processPoints = async (points: Point[]) => {
-    try {
-      const response = await fetch(
-        process.env.NESTGEOSERVICE || "http://locahost:8011/geo",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(points),
-        }
-      );
-      return response.json();
-    } catch (error) {
-      console.error("Error processing points:", error);
+  const processPoints = async (points: Point[]): Promise<GeoInfo> => {
+    const apiUrl =
+      process.env.NEXT_PUBLIC_NESTGEOSERVICE || "http://localhost:8011/geo";
+
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ points }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    return response.json();
   };
 
   return (
@@ -70,7 +71,7 @@ export default function Page() {
         points={points}
         onRemovePoint={handleRemovePoint}
       />
-      <Map points={points} />
+      <Map geoInfo={geoInfo} />
     </div>
   );
 }

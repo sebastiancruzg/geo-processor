@@ -1,18 +1,26 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+} from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { GeoInfo } from "../interfaces";
 
 interface MapProps {
-  points: { lat: number; lng: number }[];
+  geoInfo: GeoInfo;
 }
 
-const Map = ({ points }: MapProps) => {
+const Map = ({ geoInfo }: MapProps) => {
+  const { centroid, bounds } = geoInfo;
   return (
     <MapContainer
-      center={[40.7128, -74.006]}
-      zoom={12}
+      center={centroid}
+      zoom={1}
       style={{ height: "100%", width: "100%" }}
     >
       <TileLayer
@@ -20,25 +28,31 @@ const Map = ({ points }: MapProps) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
 
-      {points.map((point, index) => (
-        <Marker
-          key={index}
-          position={[point.lat, point.lng]}
-          icon={L.icon({
-            iconUrl:
-              "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [0, -41],
-          })}
-        >
-          <Popup>
-            Point {index + 1}
-            <br />
-            {point.lat.toFixed(6)}, {point.lng.toFixed(6)}
-          </Popup>
-        </Marker>
-      ))}
+      <Marker
+        position={centroid}
+        icon={L.icon({
+          iconUrl:
+            "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [0, -41],
+        })}
+      >
+        <Popup>
+          Centroid
+          <br />
+          {centroid.lat.toFixed(4)}, {centroid.lng.toFixed(4)}
+        </Popup>
+      </Marker>
+      <Polyline
+        positions={[
+          [bounds.north, bounds.west],
+          [bounds.north, bounds.east],
+          [bounds.south, bounds.east],
+          [bounds.south, bounds.west],
+          [bounds.north, bounds.west],
+        ]}
+      />
     </MapContainer>
   );
 };
