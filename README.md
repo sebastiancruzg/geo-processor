@@ -1,4 +1,3 @@
-
 # Geo-processor
 
 This project is a mono-repo to maintain simplicity and accessibility since it's a small project.
@@ -26,4 +25,9 @@ This project is a mono-repo to maintain simplicity and accessibility since it's 
 ## Installation
 
 1. Install Docker
-2. Run `docker compose up --build`
+2. Run
+```
+touch ./apps/nestjs/.env
+touch ./apps/nextjs/.env
+```
+4. Run `docker compose up --build`
