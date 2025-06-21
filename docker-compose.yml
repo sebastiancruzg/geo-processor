@@ -13,3 +13,5 @@ services:
     build: apps/nextjs
     ports:
       - "8012:3000"
+    env_file:
+      - apps/nextjs/.env
